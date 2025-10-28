@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Ticket Management System</title>
+  <script src="https://unpkg.com/vue@3.2.13/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/vue-router@4.0.3/dist/vue-router.global.js"></script>
+  <style>
+    /* React-like CSS styling */
+    :root {
+      --primary-color: #61dafb;
+      --secondary-color: #0288d1;
+      --background-color: #f0f2f5;
+      --surface-color: #ffffff;
+      --text-primary: #202124;
+      --text-secondary: #6e7781;
+      --border-color: #dadce0;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .navbar {
+      background-color: var(--surface-color);
+      color: var(--text-primary);
+      padding: 1rem 0;
+      box-shadow: var(--shadow-sm);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--secondary-color);
+      display: flex;
+      align-items: center;
+    }
+    
+    .navbar-brand::before {
+      content: "⚛";
+      margin-right: 0.5rem;
+      font-size: 1.8rem;
+    }
+    
+    .navbar-nav {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .nav-item {
+      margin-right: 0.5rem;
+    }
+    
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      display: inline-block;
+    }
+    
+    .nav-link:hover, .nav-link.router-link-active {
+      background-color: var(--background-color);
+      color: var(--secondary-color);
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 1rem;
+      margin: 0.25rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 1.5;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(97, 218, 251, 0.5);
+    }
+    
+    .btn-primary {
+      color: #fff;
+      background-color: var(--primary-color);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .btn-primary:hover {
+      background-color: #4fa8c5;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-secondary {
+      color: var(--text-primary);
+      background-color: var(--surface-color);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .btn-secondary:hover {
+      background-color: var(--background-color);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-success {
+      color: #fff;
+      background-color: var(--success-color);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .btn-success:hover {
+      background-color: #0d9488;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-danger {
+      color: #fff;
+      background-color: var(--danger-color);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .btn-danger:hover {
+      background-color: #dc2626;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      word-wrap: break-word;
+      background-color: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    
+    .card-header {
+      padding: 1rem 1.5rem;
+      margin-bottom: 0;
+      background-color: var(--background-color);
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .card-body {
+      flex: 1 1 auto;
+      padding: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+    }
+    
+    .form-control {
+      display: block;
+      width: 100%;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      background-color: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      transition: all .2s ease-in-out;
+    }
+    
+    .form-control:focus {
+      color: var(--text-primary);
+      background-color: var(--surface-color);
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(97, 218, 251, 0.2);
+    }
+    
+    .form-control::placeholder {
+      color: #a0aec0;
+    }
+    
+    .table {
+      width: 100%;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    
+    .table th, .table td {
+      padding: 0.75rem 1rem;
+      vertical-align: middle;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .table thead th {
+      vertical-align: bottom;
+      border-bottom: 2px solid var(--border-color);
+      border-top: 0;
+      background-color: var(--background-color);
+      font-weight: 600;
+      text-align: left;
+      color: var(--text-primary);
+    }
+    
+    .table tbody tr {
+      transition: background-color 0.2s ease;
+    }
+    
+    .table tbody tr:hover {
+      background-color: var(--background-color);
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 1;
+      color: #fff;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: baseline;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .badge-success {
+      background-color: var(--success-color) !important;
+    }
+    
+    .badge-warning {
+      background-color: var(--warning-color) !important;
+      color: #000 !important;
+    }
+    
+    .badge-danger {
+      background-color: var(--danger-color) !important;
+    }
+    
+    .badge-info {
+      background-color: var(--primary-color) !important;
+    }
+    
+    .text-center {
+      text-align: center !important;
+    }
+    
+    .mt-3 {
+      margin-top: 1rem !important;
+    }
+    
+    .mb-3 {
+      margin-bottom: 1rem !important;
+    }
+    
+    .d-flex {
+      display: flex !important;
+    }
+    
+    .justify-content-between {
+      justify-content: space-between !important;
+    }
+    
+    .align-items-center {
+      align-items: center !important;
+    }
+    
+    .hero {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      padding: 6rem 2rem;
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M0,96L48,128L96,96L144,128L192,96L240,128L288,96L336,128L384,96L432,128L480,96L528,128L576,96L624,128L672,96L720,128L768,96L816,128L864,96L912,128L960,96L1008,128L1056,96L1104,128L1152,96L1200,128L1248,96L1296,128L1344,96L1392,128L1440,96V320H0V96Z'/%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+    
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero p {
+      font-size: 1.25rem;
+      margin-bottom: 2.5rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .features {
+      padding: 5rem 0;
+      background-color: var(--background-color);
+    }
+    
+    .feature-card {
+      text-align: center;
+      padding: 2.5rem;
+      background-color: var(--surface-color);
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+    
+    .footer {
+      background-color: var(--surface-color);
+      color: var(--text-secondary);
+      padding: 3rem 0;
+      margin-top: 3rem;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-right: -15px;
+      margin-left: -15px;
+    }
+    
+    .col-md-3, .col-md-4, .col-md-6, .col-md-12 {
+      position: relative;
+      width: 100%;
+      padding-right: 15px;
+      padding-left: 15px;
+    }
+    
+    @media (min-width: 768px) {
+      .col-md-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+      }
+      
+      .col-md-4 {
+        flex: 0 0 33.333333%;
+        max-width: 33.333333%;
+      }
+      
+      .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+      }
+      
+      .col-md-12 {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+    }
+    
+    .justify-content-center {
+      justify-content: center !important;
+    }
+    
+    .mr-2 {
+      margin-right: 0.5rem !important;
+    }
+    
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+      border-radius: 0.2rem;
+    }
+    
+    .btn-block {
+      display: block;
+      width: 100%;
+    }
+    
+    .table-responsive {
+      overflow-x: auto;
+    }
+    
+    .input-group {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      width: 100%;
+    }
+    
+    .input-group .form-control {
+      position: relative;
+      flex: 1 1 auto;
+      width: 1%;
+      margin-bottom: 0;
+    }
+    
+    .fade-enter-active, .fade-leave-active {
+      transition: opacity 0.3s;
+    }
+    
+    .fade-enter-from, .fade-leave-to {
+      opacity: 0;
+    }
+    
+    .slide-fade-enter-active {
+      transition: all 0.3s ease-out;
+    }
+    
+    .slide-fade-leave-active {
+      transition: all 0.3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+    }
+    
+    .slide-fade-enter-from,
+    .slide-fade-leave-to {
+      transform: translateX(20px);
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <nav class="navbar">
+      <div class="container d-flex justify-content-between align-items-center">
+        <div class="navbar-brand">Ticket Management System</div>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a href="/" class="nav-link">Home</a>
+          </li>
+          <li class="nav-item">
+            <a href="/dashboard" class="nav-link">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a href="/tickets" class="nav-link">Tickets</a>
+          </li>
+          <li class="nav-item">
+            <a href="/login" class="nav-link">Login</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    
+    <router-view></router-view>
+    
+    <footer class="footer">
+      <div class="container text-center">
+        <p>&copy; 2023 Ticket Management System. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, onMounted } = Vue;
+    const { createRouter, createWebHashHistory } = VueRouter;
+
+    // Landing Page Component
+    const LandingPage = {
+      template: `
+        <div>
+          <section class="hero">
+            <div class="container">
+              <h1>Ticket Management System</h1>
+              <p>Streamline your support process with our intuitive ticket management solution</p>
+              <router-link to="/login" class="btn btn-primary">Get Started</router-link>
+            </div>
+          </section>
+          
+          <section class="features">
+            <div class="container">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>Easy Ticket Creation</h3>
+                    <p>Create and manage tickets with our intuitive interface</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Track Progress</h3>
+                    <p>Monitor ticket status and resolution time</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Team Collaboration</h3>
+                    <p>Assign tickets to team members and collaborate effectively</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      `
+    };
+
+    // Dashboard Page Component
+    const DashboardPage = {
+      template: `
+        <div class="container mt-3">
+          <h1>Dashboard</h1>
+          <div class="row" style="gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="col-md-3" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border-radius: 12px; padding: 1.5rem; color: white; box-shadow: var(--shadow-md);">
+              <div style="text-align: center;">
+                <h2 style="font-size: 2.5rem; font-weight: 700; margin: 0 0 0.5rem 0;">{{ totalTickets }}</h2>
+                <p style="margin: 0; font-size: 1rem; opacity: 0.9;">Total Tickets</p>
+              </div>
+            </div>
+            <div class="col-md-3" style="background: linear-gradient(135deg, var(--warning-color), #e08e0b); border-radius: 12px; padding: 1.5rem; color: white; box-shadow: var(--shadow-md);">
+              <div style="text-align: center;">
+                <h2 style="font-size: 2.5rem; font-weight: 700; margin: 0 0 0.5rem 0;">{{ openTickets }}</h2>
+                <p style="margin: 0; font-size: 1rem; opacity: 0.9;">Open Tickets</p>
+              </div>
+            </div>
+            <div class="col-md-3" style="background: linear-gradient(135deg, #0d9488, var(--success-color)); border-radius: 12px; padding: 1.5rem; color: white; box-shadow: var(--shadow-md);">
+              <div style="text-align: center;">
+                <h2 style="font-size: 2.5rem; font-weight: 700; margin: 0 0 0.5rem 0;">{{ inProgressTickets }}</h2>
+                <p style="margin: 0; font-size: 1rem; opacity: 0.9;">In Progress</p>
+              </div>
+            </div>
+            <div class="col-md-3" style="background: linear-gradient(135deg, #0d9488, #059669); border-radius: 12px; padding: 1.5rem; color: white; box-shadow: var(--shadow-md);">
+              <div style="text-align: center;">
+                <h2 style="font-size: 2.5rem; font-weight: 700; margin: 0 0 0.5rem 0;">{{ resolvedTickets }}</h2>
+                <p style="margin: 0; font-size: 1rem; opacity: 0.9;">Resolved</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row mt-3">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header">
+                  <h3>Recent Tickets</h3>
+                </div>
+                <div class="card-body">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Created</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="ticket in recentTickets" :key="ticket.id">
+                        <td>{{ ticket.id }}</td>
+                        <td>{{ ticket.title }}</td>
+                        <td>
+                          <span :class="'badge badge-' + getStatusColor(ticket.status).toLowerCase()">
+                            {{ ticket.status }}
+                          </span>
+                        </td>
+                        <td>
+                          <span :class="'badge badge-' + getPriorityColor(ticket.priority).toLowerCase()">
+                            {{ ticket.priority }}
+                          </span>
+                        </td>
+                        <td>{{ formatDate(ticket.createdAt) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      setup() {
+        const totalTickets = ref(42);
+        const openTickets = ref(15);
+        const inProgressTickets = ref(12);
+        const resolvedTickets = ref(15);
+        
+        const recentTickets = ref([
+          { id: 101, title: 'Login issue', status: 'Open', priority: 'High', createdAt: '2023-05-15T10:30:00Z' },
+          { id: 102, title: 'Cannot access dashboard', status: 'In Progress', priority: 'Medium', createdAt: '2023-05-14T14:20:00Z' },
+          { id: 103, title: 'Password reset not working', status: 'Resolved', priority: 'Low', createdAt: '2023-05-13T09:15:00Z' },
+          { id: 104, title: 'Error when submitting form', status: 'Open', priority: 'High', createdAt: '2023-05-12T16:45:00Z' },
+          { id: 105, title: 'Page loading slowly', status: 'In Progress', priority: 'Medium', createdAt: '2023-05-11T11:30:00Z' }
+        ]);
+        
+        const getStatusColor = (status) => {
+          switch (status) {
+            case 'Open': return 'Danger';
+            case 'In Progress': return 'Warning';
+            case 'Resolved': return 'Success';
+            default: return 'Info';
+          }
+        };
+        
+        const getPriorityColor = (priority) => {
+          switch (priority) {
+            case 'High': return 'Danger';
+            case 'Medium': return 'Warning';
+            case 'Low': return 'Success';
+            default: return 'Info';
+          }
+        };
+        
+        const formatDate = (dateString) => {
+          const date = new Date(dateString);
+          return date.toLocaleDateString();
+        };
+        
+        return {
+          totalTickets,
+          openTickets,
+          inProgressTickets,
+          resolvedTickets,
+          recentTickets,
+          getStatusColor,
+          getPriorityColor,
+          formatDate
+        };
+      }
+    };
+
+    // Ticket Management Page Component
+    const TicketManagementPage = {
+      template: `
+        <div class="container mt-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1>Ticket Management</h1>
+            <button class="btn btn-primary" @click="showCreateForm = true" style="display: flex; align-items: center; gap: 0.5rem;">
+              <span>+</span> Create New Ticket
+            </button>
+          </div>
+          
+          <div v-if="showCreateForm" class="card mb-3" style="border: none; box-shadow: var(--shadow-lg); border-radius: 16px; overflow: hidden;">
+            <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none;">
+              <h3 style="margin: 0; font-weight: 600;">Create New Ticket</h3>
+            </div>
+            <div class="card-body" style="padding: 2rem;">
+              <form @submit.prevent="createTicket">
+                <div class="form-group">
+                  <label class="form-label">Title</label>
+                  <input type="text" class="form-control" v-model="newTicket.title" required placeholder="Enter ticket title">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Description</label>
+                  <textarea class="form-control" v-model="newTicket.description" rows="3" required placeholder="Describe the issue in detail"></textarea>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-label">Priority</label>
+                      <select class="form-control" v-model="newTicket.priority" required>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label class="form-label">Assigned To</label>
+                      <select class="form-control" v-model="newTicket.assignedTo">
+                        <option value="">Not Assigned</option>
+                        <option value="John Doe">John Doe</option>
+                        <option value="Jane Smith">Jane Smith</option>
+                        <option value="Bob Johnson">Bob Johnson</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-top: 2rem;">
+                  <button type="submit" class="btn btn-primary" style="margin-right: 0.75rem;">Create Ticket</button>
+                  <button type="button" class="btn btn-secondary" @click="showCreateForm = false">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          
+          <div class="card" style="border: none; box-shadow: var(--shadow-lg); border-radius: 16px; overflow: hidden;">
+            <div class="card-header" style="background-color: var(--background-color); border-bottom: 1px solid var(--border-color); padding: 1.5rem;">
+              <div class="d-flex justify-content-between align-items-center">
+                <h3 style="margin: 0; font-weight: 600;">Tickets</h3>
+                <div>
+                  <input type="text" class="form-control" placeholder="Search tickets..." style="width: 250px; display: inline-block;">
+                </div>
+              </div>
+            </div>
+            <div class="card-body" style="padding: 0;">
+              <div class="table-responsive">
+                <table class="table" style="margin-bottom: 0;">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Title</th>
+                      <th>Status</th>
+                      <th>Priority</th>
+                      <th>Assigned To</th>
+                      <th>Created</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="ticket in tickets" :key="ticket.id">
+                      <td><strong>#{{ ticket.id }}</strong></td>
+                      <td>{{ ticket.title }}</td>
+                      <td>
+                        <span :class="'badge badge-' + getStatusColor(ticket.status).toLowerCase()">
+                          {{ ticket.status }}
+                        </span>
+                      </td>
+                      <td>
+                        <span :class="'badge badge-' + getPriorityColor(ticket.priority).toLowerCase()">
+                          {{ ticket.priority }}
+                        </span>
+                      </td>
+                      <td>{{ ticket.assignedTo || 'Unassigned' }}</td>
+                      <td>{{ formatDate(ticket.createdAt) }}</td>
+                      <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                          <button class="btn btn-sm" style="background-color: var(--background-color); color: var(--text-primary); border: 1px solid var(--border-color);" @click="editTicket(ticket)">
+                            Edit
+                          </button>
+                          <button class="btn btn-sm btn-danger" @click="deleteTicket(ticket.id)">
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      setup() {
+        const showCreateForm = ref(false);
+        const tickets = ref([
+          { id: 101, title: 'Login issue', status: 'Open', priority: 'High', assignedTo: 'John Doe', createdAt: '2023-05-15T10:30:00Z' },
+          { id: 102, title: 'Cannot access dashboard', status: 'In Progress', priority: 'Medium', assignedTo: 'Jane Smith', createdAt: '2023-05-14T14:20:00Z' },
+          { id: 103, title: 'Password reset not working', status: 'Resolved', priority: 'Low', assignedTo: 'Bob Johnson', createdAt: '2023-05-13T09:15:00Z' },
+          { id: 104, title: 'Error when submitting form', status: 'Open', priority: 'High', assignedTo: 'John Doe', createdAt: '2023-05-12T16:45:00Z' },
+          { id: 105, title: 'Page loading slowly', status: 'In Progress', priority: 'Medium', assignedTo: '', createdAt: '2023-05-11T11:30:00Z' }
+        ]);
+        
+        const newTicket = ref({
+          title: '',
+          description: '',
+          priority: 'Medium',
+          assignedTo: ''
+        });
+        
+        const getStatusColor = (status) => {
+          switch (status) {
+            case 'Open': return 'Danger';
+            case 'In Progress': return 'Warning';
+            case 'Resolved': return 'Success';
+            default: return 'Info';
+          }
+        };
+        
+        const getPriorityColor = (priority) => {
+          switch (priority) {
+            case 'High': return 'Danger';
+            case 'Medium': return 'Warning';
+            case 'Low': return 'Success';
+            default: return 'Info';
+          }
+        };
+        
+        const formatDate = (dateString) => {
+          const date = new Date(dateString);
+          return date.toLocaleDateString();
+        };
+        
+        const createTicket = () => {
+          const id = Math.max(...tickets.value.map(t => t.id)) + 1;
+          tickets.value.push({
+            id,
+            ...newTicket.value,
+            status: 'Open',
+            createdAt: new Date().toISOString()
+          });
+          
+          // Reset form
+          newTicket.value = {
+            title: '',
+            description: '',
+            priority: 'Medium',
+            assignedTo: ''
+          };
+          showCreateForm.value = false;
+        };
+        
+        const editTicket = (ticket) => {
+          // In a real app, this would open an edit form
+          alert(`Edit ticket: ${ticket.title}`);
+        };
+        
+        const deleteTicket = (id) => {
+          if (confirm('Are you sure you want to delete this ticket?')) {
+            tickets.value = tickets.value.filter(t => t.id !== id);
+          }
+        };
+        
+        return {
+          showCreateForm,
+          tickets,
+          newTicket,
+          getStatusColor,
+          getPriorityColor,
+          formatDate,
+          createTicket,
+          editTicket,
+          deleteTicket
+        };
+      }
+    };
+
+    // Login Page Component
+    const LoginPage = {
+      template: `
+        <div class="container mt-3">
+          <div class="row justify-content-center">
+            <div class="col-md-6">
+              <div class="card" style="border: none; box-shadow: var(--shadow-lg); border-radius: 16px; overflow: hidden;">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; text-align: center; padding: 2rem 1.5rem;">
+                  <h3 style="margin: 0; font-weight: 600;">Welcome Back</h3>
+                  <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Sign in to your account</p>
+                </div>
+                <div class="card-body" style="padding: 2rem;">
+                  <form @submit.prevent="login">
+                    <div class="form-group">
+                      <label class="form-label">Email</label>
+                      <input type="email" class="form-control" v-model="email" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Password</label>
+                      <input type="password" class="form-control" v-model="password" required placeholder="Enter your password">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                          <input type="checkbox" id="remember" style="margin-right: 0.5rem;">
+                          <label for="remember" style="margin: 0; font-size: 0.875rem;">Remember me</label>
+                        </div>
+                        <a href="#" style="font-size: 0.875rem; color: var(--primary-color); text-decoration: none;">Forgot password?</a>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-primary btn-block" style="padding: 0.75rem; font-weight: 600; border-radius: 8px;">Login</button>
+                    </div>
+                  </form>
+                  <div class="text-center mt-3">
+                    <p style="margin: 0; color: var(--text-secondary);">Don't have an account? <a href="#/signup" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Sign up</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      setup() {
+        const email = ref('');
+        const password = ref('');
+        
+        const login = () => {
+          // In a real app, this would authenticate with a backend
+          alert(`Login with email: ${email.value}`);
+          // Redirect to dashboard after successful login
+          router.push('/dashboard');
+        };
+        
+        return {
+          email,
+          password,
+          login
+        };
+      }
+    };
+
+    // Signup Page Component
+    const SignupPage = {
+      template: `
+        <div class="container mt-3">
+          <div class="row justify-content-center">
+            <div class="col-md-6">
+              <div class="card" style="border: none; box-shadow: var(--shadow-lg); border-radius: 16px; overflow: hidden;">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; text-align: center; padding: 2rem 1.5rem;">
+                  <h3 style="margin: 0; font-weight: 600;">Create Account</h3>
+                  <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Join us today</p>
+                </div>
+                <div class="card-body" style="padding: 2rem;">
+                  <form @submit.prevent="signup">
+                    <div class="form-group">
+                      <label class="form-label">Full Name</label>
+                      <input type="text" class="form-control" v-model="name" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Email</label>
+                      <input type="email" class="form-control" v-model="email" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Password</label>
+                      <input type="password" class="form-control" v-model="password" required placeholder="Create a password">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Confirm Password</label>
+                      <input type="password" class="form-control" v-model="confirmPassword" required placeholder="Confirm your password">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                      <div>
+                        <input type="checkbox" id="terms" style="margin-right: 0.5rem;">
+                        <label for="terms" style="margin: 0; font-size: 0.875rem;">I agree to the <a href="#" style="color: var(--primary-color); text-decoration: none;">Terms and Conditions</a></label>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-primary btn-block" style="padding: 0.75rem; font-weight: 600; border-radius: 8px;">Sign Up</button>
+                    </div>
+                  </form>
+                  <div class="text-center mt-3">
+                    <p style="margin: 0; color: var(--text-secondary);">Already have an account? <a href="#/login" style="color: var(--primary-color); text-decoration: none; font-weight: 500;">Login</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      setup() {
+        const name = ref('');
+        const email = ref('');
+        const password = ref('');
+        const confirmPassword = ref('');
+        
+        const signup = () => {
+          if (password.value !== confirmPassword.value) {
+            alert('Passwords do not match');
+            return;
+          }
+          
+          // In a real app, this would register with a backend
+          alert(`Sign up with email: ${email.value}`);
+          // Redirect to login after successful signup
+          router.push('/login');
+        };
+        
+        return {
+          name,
+          email,
+          password,
+          confirmPassword,
+          signup
+        };
+      }
+    };
+
+    // Define routes
+    const routes = [
+      { path: '/', component: LandingPage },
+      { path: '/dashboard', component: DashboardPage },
+      { path: '/tickets', component: TicketManagementPage },
+      { path: '/login', component: LoginPage },
+      { path: '/signup', component: SignupPage }
+    ];
+
+    // Create router
+    const router = createRouter({
+      history: createWebHashHistory(),
+      routes
+    });
+
+    // Create app
+    const app = createApp({});
+    app.use(router);
+    app.mount('#app');
+  </script>
+</body>
+</html>
